@@ -1,7 +1,7 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
-// Direct MongoDB URI connection string
-const uri = "mongodb+srv://HansDB:Hansmoses2007#@lisensi.98zue9l.mongodb.net/?retryWrites=true&w=majority&appName=Lisensi";
+// Direct MongoDB URI connection string with URL-encoded '#'
+const uri = "mongodb+srv://HansDB:Hansmoses2007%23@lisensi.98zue9l.mongodb.net/?retryWrites=true&w=majority&appName=Lisensi";
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -20,7 +20,8 @@ module.exports = async (req, res) => {
         }
 
         try {
-            // Connect to MongoDB
+            // Log the connection attempt
+            console.log('Attempting to connect to MongoDB...');
             await client.connect();
 
             const db = client.db("licensingDB"); // Database name
@@ -29,12 +30,17 @@ module.exports = async (req, res) => {
             // Insert the license into MongoDB
             const result = await collection.insertOne({ license });
 
+            // Log the result
+            console.log(`License added: ${license}`);
+
             // Return success response
             res.status(200).json({ success: true, message: 'Lisensi berhasil ditambahkan!' });
         } catch (error) {
+            // Log the error details for debugging
             console.error('Database connection error:', error);
             res.status(500).json({ success: false, message: 'Terjadi kesalahan di server.' });
         } finally {
+            // Ensure MongoDB connection is closed
             await client.close();
         }
     } else {
