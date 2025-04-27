@@ -7,12 +7,9 @@
 </head>
 <body>
     <h1>Tambah Lisensi</h1>
-    
-    <label for="license">Masukkan Lisensi:</label>
-    <input type="text" id="license" placeholder="Masukkan lisensi di sini">
+    <input type="text" id="license" placeholder="Masukkan Lisensi">
     <button onclick="addLicense()">Tambah Lisensi</button>
-
-    <div id="response-message"></div> <!-- Menampilkan pesan hasil -->
+    <p id="response-message"></p>
 
     <script>
         async function addLicense() {
@@ -27,15 +24,15 @@
             }
 
             try {
-                // Perbaiki URL API di sini dengan URL yang benar
-                const response = await fetch('https://lisensi-api.vercel.app/api/addLicense', {  // Gantilah dengan URL API yang benar
+                // Gantilah <your-project-name> dengan nama project kamu di Vercel
+                const response = await fetch('https://lisensiproject.vercel.app/api/addLicense', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ license })
                 });
 
-                // Pastikan API memberikan respons yang valid (JSON)
                 const data = await response.json();
+                console.log(data);  // Cek hasil dari API
 
                 if (data.success) {
                     responseMessage.textContent = data.message;
