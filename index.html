@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lisensi API</title>
+    <title>Tambah Lisensi</title>
 </head>
 <body>
     <h1>Tambah Lisensi</h1>
@@ -27,12 +27,13 @@
             }
 
             try {
-                const response = await fetch('/api/addLicense', {
+                const response = await fetch('https://<your-project-name>.vercel.app/api/addLicense', {  // Perbaiki URL API di sini
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ license })
                 });
 
+                // Pastikan API memberikan respons yang valid (JSON)
                 const data = await response.json();
 
                 if (data.success) {
