@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
             res.status(200).json({ success: true, message: 'Lisensi berhasil ditambahkan!' });
         } catch (error) {
             console.error('Error saat menyimpan lisensi:', error);  // Log error untuk debugging
-            res.status(500).json({ success: false, message: error.message });
+            res.status(500).json({ success: false, message: 'Terjadi kesalahan di server: ' + error.message });
         } finally {
             await client.close();
         }
