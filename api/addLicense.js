@@ -1,34 +1,39 @@
 const { MongoClient } = require('mongodb');
 
-// Koneksi ke MongoDB Atlas
-const uri = 'mongodb+srv://HansDB:Hansmoses2007#@lisensi.98zue9l.mongodb.net/?retryWrites=true&w=majority';
-const client = new MongoClient(uri);
+// MongoDB connection URI and database details
+const mongoURI = "mongodb+srv://HansDB:Hansmoses2007#@cluster0.mongodb.net";
+const dbName = "licensingDB";
+const collectionName = "licenses";
+
+// Connect to MongoDB and add the license
+const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 module.exports = async (req, res) => {
     if (req.method === 'POST') {
         const { license } = req.body;
 
         if (!license) {
-            return res.status(400).json({ success: false, message: 'Lisensi tidak boleh kosong' });
+            return res.status(400).json({ message: 'Lisensi tidak boleh kosong' });
         }
 
         try {
-            // Coba connect ke MongoDB
             await client.connect();
-            const database = client.db('Lisensi');  // Nama database
-            const collection = database.collection('Licenses');  // Nama collection
+            const db = client.db(dbName);
+            const collection = db.collection(collectionName);
 
-            // Insert lisensi baru ke MongoDB
-            await collection.insertOne({ license, created_at: new Date() });
-            console.log('Lisensi berhasil ditambahkan:', license);
+            // Insert the new license into MongoDB
+            const result = await collection.insertOne({ license });
+
+            // Respond with success
             res.status(200).json({ success: true, message: 'Lisensi berhasil ditambahkan!' });
         } catch (error) {
-            console.error('Error saat menyimpan lisensi:', error);
-            res.status(500).json({ success: false, message: 'Terjadi kesalahan di server: ' + error.message });
+            console.error('Database connection error:', error);
+            res.status(500).json({ success: false, message: 'Terjadi kesalahan di server.' });
         } finally {
             await client.close();
         }
     } else {
-        res.status(405).json({ success: false, message: 'Method Not Allowed' });
+        // Handle non-POST requests
+        res.status(405).json({ message: 'Method Not Allowed' });
     }
 };
