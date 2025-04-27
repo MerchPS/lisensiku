@@ -27,7 +27,8 @@
             }
 
             try {
-                const response = await fetch('https://<your-project-name>.vercel.app/api/addLicense', {  // Perbaiki URL API di sini
+                // Perbaiki URL API di sini dengan URL yang benar
+                const response = await fetch('https://lisensi-api.vercel.app/api/addLicense', {  // Gantilah dengan URL API yang benar
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ license })
