@@ -56,11 +56,55 @@
 <div class="container">
     <h1>Login Lisensi</h1>
 
-    <form action="action.php" method="POST">
-        <input type="password" name="password" placeholder="Masukkan password" required>
+    <form id="license-form">
+        <input type="password" id="password" placeholder="Masukkan password" required>
         <button type="submit">Login</button>
     </form>
+
+    <div id="license-container" style="display:none;">
+        <h2>Tambah Lisensi</h2>
+        <input type="text" id="license" placeholder="Masukkan lisensi baru" required>
+        <button onclick="addLicense()">Tambah Lisensi</button>
+        <p id="response-message"></p>
+    </div>
 </div>
+
+<script>
+    // Handle form submission for login
+    document.getElementById('license-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        let password = document.getElementById('password').value;
+
+        // Replace this with your own logic to verify password
+        if (password === 'password123') {
+            document.getElementById('license-container').style.display = 'block';
+        } else {
+            alert('Password salah!');
+        }
+    });
+
+    // Function to add a new license
+    async function addLicense() {
+        let license = document.getElementById('license').value;
+        let responseMessage = document.getElementById('response-message');
+
+        const response = await fetch('/api/addLicense', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ license })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            responseMessage.textContent = 'Lisensi berhasil ditambahkan!';
+            responseMessage.style.color = 'green';
+        } else {
+            responseMessage.textContent = 'Gagal menambahkan lisensi.';
+            responseMessage.style.color = 'red';
+        }
+    }
+</script>
 
 </body>
 </html>
