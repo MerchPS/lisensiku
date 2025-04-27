@@ -1,5 +1,5 @@
 <?php
-require 'vendor/autoload.php'; // Pastikan sudah terpasang dengan composer
+require 'vendor/autoload.php'; // Pastikan MongoDB sudah terpasang via composer
 
 // Koneksi MongoDB
 $uri = 'mongodb+srv://HansDB:Hansmoses2007#@lisensi.98zue9l.mongodb.net/?retryWrites=true&w=majority';
@@ -9,7 +9,7 @@ $collection = $database->selectCollection('Licenses'); // Nama koleksi
 
 session_start();
 
-// Proses login
+// Cek apakah password benar
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['password'])) {
     $password_input = $_POST['password'];
     $correct_password = 'password123'; // Ganti dengan password yang kamu inginkan
@@ -21,28 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['password'])) {
     }
 }
 
-// Proses tambah lisensi
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['license'])) {
+// Proses untuk menambah lisensi
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['license']) && isset($_SESSION['logged_in'])) {
     $license = $_POST['license'];
 
-    // Cek apakah database sudah ada
-    $dbList = $client->listDatabases();
-    $isDbExist = false;
-    foreach ($dbList as $db) {
-        if ($db['name'] == 'Lisensi') {
-            $isDbExist = true;
-            break;
-        }
-    }
-
-    // Jika database belum ada, buat database baru
-    if (!$isDbExist) {
-        $client->selectDatabase('Lisensi'); // MongoDB otomatis akan membuat database saat data pertama kali ditambahkan
-    }
-
-    // Insert data lisensi
+    // Insert lisensi ke MongoDB
     $collection->insertOne(['license' => $license, 'created_at' => new MongoDB\BSON\UTCDateTime()]);
-    $success = 'Lisensi berhasil dibuat!';
+    $success = 'Lisensi berhasil ditambahkan!';
 }
 ?>
 
@@ -102,22 +87,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['license'])) {
 <body>
 
 <div class="container">
-    <h1>Login Lisensi</h1>
-
-    <?php if (!isset($_SESSION['logged_in'])) { ?>
-        <form method="POST" action="">
+    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true) { ?>
+        <h1>Tambah Lisensi</h1>
+        <form method="POST" action="action.php">
+            <input type="text" name="license" placeholder="Masukkan lisensi baru" required>
+            <button type="submit">Tambah Lisensi</button>
+        </form>
+        <?php if (isset($success)) { echo "<p class='message'>$success</p>"; } ?>
+    <?php } else { ?>
+        <h1>Login Lisensi</h1>
+        <form method="POST" action="action.php">
             <input type="password" name="password" placeholder="Masukkan password" required>
             <button type="submit">Login</button>
         </form>
         <?php if (isset($error)) { echo "<p class='error'>$error</p>"; } ?>
-    <?php } else { ?>
-        <h2>Tambah Lisensi</h2>
-        <form method="POST" action="">
-            <input type="text" name="license" placeholder="Masukkan lisensi baru" required>
-            <button type="submit">Tambah Lisensi</button>
-        </form>
-
-        <?php if (isset($success)) { echo "<p class='message'>$success</p>"; } ?>
     <?php } ?>
 </div>
 
