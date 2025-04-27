@@ -1,110 +1,53 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lisensi System</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .message {
-            color: green;
-            text-align: center;
-        }
-        .error {
-            color: red;
-            text-align: center;
-        }
-    </style>
+    <title>Lisensi API</title>
 </head>
 <body>
+    <h1>Tambah Lisensi</h1>
+    
+    <label for="license">Masukkan Lisensi:</label>
+    <input type="text" id="license" placeholder="Masukkan lisensi di sini">
+    <button onclick="addLicense()">Tambah Lisensi</button>
 
-<div class="container">
-    <h1>Login Lisensi</h1>
+    <div id="response-message"></div> <!-- Menampilkan pesan hasil -->
 
-    <form id="license-form">
-        <input type="password" id="password" placeholder="Masukkan password" required>
-        <button type="submit">Login</button>
-    </form>
+    <script>
+        async function addLicense() {
+            let license = document.getElementById('license').value;
+            let responseMessage = document.getElementById('response-message');
 
-    <div id="license-container" style="display:none;">
-        <h2>Tambah Lisensi</h2>
-        <input type="text" id="license" placeholder="Masukkan lisensi baru" required>
-        <button onclick="addLicense()">Tambah Lisensi</button>
-        <p id="response-message"></p>
-    </div>
-</div>
+            // Validasi input lisensi
+            if (!license) {
+                responseMessage.textContent = 'Lisensi tidak boleh kosong';
+                responseMessage.style.color = 'red';
+                return;
+            }
 
-<script>
-    // Handle form submission for login
-    document.getElementById('license-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        let password = document.getElementById('password').value;
+            try {
+                const response = await fetch('/api/addLicense', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ license })
+                });
 
-        // Replace this with your own logic to verify password
-        if (password === 'password123') {
-            document.getElementById('license-container').style.display = 'block';
-        } else {
-            alert('Password salah!');
+                const data = await response.json();
+
+                if (data.success) {
+                    responseMessage.textContent = data.message;
+                    responseMessage.style.color = 'green';
+                } else {
+                    responseMessage.textContent = data.message || 'Gagal menambahkan lisensi.';
+                    responseMessage.style.color = 'red';
+                }
+            } catch (error) {
+                console.error('Error saat mengirim permintaan:', error);
+                responseMessage.textContent = 'Terjadi kesalahan saat menghubungi server.';
+                responseMessage.style.color = 'red';
+            }
         }
-    });
-
-    // Function to add a new license
-    async function addLicense() {
-        let license = document.getElementById('license').value;
-        let responseMessage = document.getElementById('response-message');
-
-        const response = await fetch('/api/addLicense', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ license })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            responseMessage.textContent = 'Lisensi berhasil ditambahkan!';
-            responseMessage.style.color = 'green';
-        } else {
-            responseMessage.textContent = 'Gagal menambahkan lisensi.';
-            responseMessage.style.color = 'red';
-        }
-    }
-</script>
-
+    </script>
 </body>
 </html>
