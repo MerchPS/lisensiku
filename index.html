@@ -3,50 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Lisensi</title>
+    <title>License Manager</title>
 </head>
 <body>
-    <h1>Tambah Lisensi</h1>
-    <input type="text" id="license" placeholder="Masukkan Lisensi">
-    <button onclick="addLicense()">Tambah Lisensi</button>
-    <p id="response-message"></p>
+    <h1>License Management</h1>
+    
+    <!-- Form to add license -->
+    <form id="licenseForm">
+        <label for="licenseInput">Masukkan Lisensi:</label>
+        <input type="text" id="licenseInput" name="license" required>
+        <button type="submit">Tambah Lisensi</button>
+    </form>
+
+    <!-- Display result -->
+    <div id="result"></div>
 
     <script>
-        async function addLicense() {
-            let license = document.getElementById('license').value;
-            let responseMessage = document.getElementById('response-message');
+        // Handle form submission
+        document.getElementById('licenseForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
 
-            // Validasi input lisensi
-            if (!license) {
-                responseMessage.textContent = 'Lisensi tidak boleh kosong';
-                responseMessage.style.color = 'red';
-                return;
-            }
-
+            const license = document.getElementById('licenseInput').value;
+            const resultDiv = document.getElementById('result');
+            
+            // Send data to the server
             try {
-                // Gantilah <your-project-name> dengan nama project kamu di Vercel
-                const response = await fetch('https://lisensiproject.vercel.app/api/addLicense', {
+                const response = await fetch('https://<your-project-name>.vercel.app/api/addLicense', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
                     body: JSON.stringify({ license })
                 });
 
                 const data = await response.json();
-                console.log(data);  // Cek hasil dari API
 
                 if (data.success) {
-                    responseMessage.textContent = data.message;
-                    responseMessage.style.color = 'green';
+                    resultDiv.innerHTML = `<p>Lisensi berhasil ditambahkan: ${license}</p>`;
                 } else {
-                    responseMessage.textContent = data.message || 'Gagal menambahkan lisensi.';
-                    responseMessage.style.color = 'red';
+                    resultDiv.innerHTML = `<p>Gagal menambahkan lisensi. Kesalahan server: ${data.message}</p>`;
                 }
             } catch (error) {
-                console.error('Error saat mengirim permintaan:', error);
-                responseMessage.textContent = 'Terjadi kesalahan saat menghubungi server.';
-                responseMessage.style.color = 'red';
+                resultDiv.innerHTML = `<p>Terjadi kesalahan saat menghubungi server: ${error.message}</p>`;
             }
-        }
+        });
     </script>
 </body>
 </html>
